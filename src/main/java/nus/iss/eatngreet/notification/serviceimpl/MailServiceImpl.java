@@ -7,6 +7,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
@@ -28,6 +30,8 @@ public class MailServiceImpl implements MailService {
 	@Value("${spring.mail.username}")
 	private String eatNGreetEmailId;
 
+	private static final Logger logger = LoggerFactory.getLogger(MailServiceImpl.class);
+
 	@Override
 	public CommonResponseDto sendConfirmationEmail(Map<String, Object> reqObj, HttpServletRequest request) {
 		CommonResponseDto response = new CommonResponseDto();
@@ -40,9 +44,11 @@ public class MailServiceImpl implements MailService {
 					+ reqObj.get("count") + " people on " + simpleDateFormat.format(date) + "."
 					+ "\nFor more details about this order, kindly visit your orders section.";
 			sendMail((String) reqObj.get("email"), Constants.CONFIRMATION_MAIL_SUBJECT, body);
+			logger.info("Confirmation mail sent successfully.");
 			ResponseUtil.prepareResponse(response, "Confirmation mail was sent successfully.", Constants.STATUS_SUCCESS,
 					"Confirmation mail was sent successfully.", true);
 		} else {
+			logger.error(Constants.INVALID_AUTH_TOKEN_ERROR_MESSAGE);
 			ResponseUtil.prepareResponse(response, Constants.INVALID_AUTH_TOKEN_ERROR_MESSAGE, Constants.STATUS_FAILURE,
 					Constants.INVALID_AUTH_TOKEN_ERROR_MESSAGE, false);
 		}
@@ -51,6 +57,7 @@ public class MailServiceImpl implements MailService {
 
 	@Override
 	public CommonResponseDto sendJoiningMealEmail(Map<String, Object> reqObj, HttpServletRequest request) {
+		logger.info("sendJoiningMealEmail() of MailServiceImpl.");
 		CommonResponseDto response = new CommonResponseDto();
 		if (Util.checkAuthHeader(request)) {
 			String guestName = (String) reqObj.get("guestName");
@@ -74,9 +81,11 @@ public class MailServiceImpl implements MailService {
 					+ "." + "\nFor more details about this order, kindly visit your orders section.";
 			sendMail(guestEmailId, Constants.JOINING_MAIL_SUBJECT, guestMailBody);
 			sendMail(hostEmailId, Constants.NOTIFY_HOST_MAIL_SUBJECT, hostMailBody);
-			ResponseUtil.prepareResponse(response, "Successfully sent confirmation mail.", Constants.STATUS_SUCCESS,
-					"Successfully sent confirmation mail.", true);
+			logger.info("Joining mail sent successfully.");
+			ResponseUtil.prepareResponse(response, "Successfully sent joining mail.", Constants.STATUS_SUCCESS,
+					"Successfully sent joining mail.", true);
 		} else {
+			logger.error(Constants.INVALID_AUTH_TOKEN_ERROR_MESSAGE);
 			ResponseUtil.prepareResponse(response, Constants.INVALID_AUTH_TOKEN_ERROR_MESSAGE, Constants.STATUS_FAILURE,
 					Constants.INVALID_AUTH_TOKEN_ERROR_MESSAGE, false);
 		}
@@ -85,17 +94,19 @@ public class MailServiceImpl implements MailService {
 
 	@Override
 	public CommonResponseDto sendOnboardingEmail(Map<String, Object> reqObj, HttpServletRequest request) {
+		logger.info("sendOnboardingEmail() of MailServiceImpl.");
 		CommonResponseDto response = new CommonResponseDto();
 		if (Util.checkAuthHeader(request)) {
 			String userName = (String) reqObj.get("name");
 			String userEmailId = (String) reqObj.get("email");
-			String mailBody = "Hey " + userName + ","
-					+ "\n\nWe're happy to have you onboard."
+			String mailBody = "Hey " + userName + "," + "\n\nWe're happy to have you onboard."
 					+ "\nAs a welcome gift, SGD 10 has been credited to your account for you to have your taste buds satisfied.";
 			sendMail(userEmailId, Constants.ONBOARDING_MAIL_SUBJECT, mailBody);
+			logger.info("On boarding mail sent successfully.");
 			ResponseUtil.prepareResponse(response, "Successfully sent onboarding mail.", Constants.STATUS_SUCCESS,
 					"Successfully sent onboarding mail.", true);
 		} else {
+			logger.error(Constants.INVALID_AUTH_TOKEN_ERROR_MESSAGE);
 			ResponseUtil.prepareResponse(response, Constants.INVALID_AUTH_TOKEN_ERROR_MESSAGE, Constants.STATUS_FAILURE,
 					Constants.INVALID_AUTH_TOKEN_ERROR_MESSAGE, false);
 		}
@@ -103,6 +114,7 @@ public class MailServiceImpl implements MailService {
 	}
 
 	private boolean sendMail(String to, String subject, String body) {
+		logger.info("sendMail() of MailServiceImpl.");
 		SimpleMailMessage message = new SimpleMailMessage();
 		message.setTo(to);
 		message.setFrom(eatNGreetEmailId);

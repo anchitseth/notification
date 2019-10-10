@@ -5,8 +5,9 @@ import javax.servlet.http.HttpServletRequest;
 public class Util {
 
 	public static boolean checkAuthHeader(HttpServletRequest request) {
-		if (!isStringEmpty(request.getHeader("Authorization"))) {
-			String authToken = request.getHeader("Authorization").substring("Bearer".length()).trim();
+		if (!isStringEmpty(request.getHeader(Constants.AUTHORIZATION_HEADER_NAME))) {
+			String authToken = request.getHeader(Constants.AUTHORIZATION_HEADER_NAME).substring("Bearer".length())
+					.trim();
 			return Constants.CONFIRMATION_MAIL_TOKEN.equals(authToken);
 		}
 		return false;
@@ -14,6 +15,10 @@ public class Util {
 
 	public static boolean isStringEmpty(String str) {
 		return (str == null || str.trim().length() == 0);
+	}
+
+	private Util() {
+
 	}
 
 }

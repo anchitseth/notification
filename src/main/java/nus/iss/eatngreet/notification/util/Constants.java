@@ -11,6 +11,7 @@ public class Constants {
 	public static final String MAIL_SIGNATURE = "\n\n\nWith <3 from,\nEat-n-Greet team";
 	public static final String ONBOARDING_MAIL_SUBJECT = "Welcome Onboard!!! :)";
 	public static final String INVALID_AUTH_TOKEN_ERROR_MESSAGE = "Invalid authentication token in headers.";
+	public static final String AUTHORIZATION_HEADER_NAME = "Authorization";
 
 	private Constants() {
 
